@@ -5,7 +5,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
-	"time"
 )
 
 func main() {
@@ -15,17 +14,12 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	userRepository := user.NewRepository(db)
-	user := user.User{
-		ID:             2,
-		Name:           "coba",
-		Occupation:     "coba",
-		Email:          "coba",
-		AvatarFileName: "coba.jpg",
-		Role:           "biasa",
-		Token:          "teoken123",
-		PasswordHash:   "test",
-		CreatedAt:      time.Time{},
-		UpdatedAt:      time.Time{},
-	}
-	userRepository.Save(user)
+	userService := user.NewService(userRepository)
+	userInput := user.RegisterUserInput{}
+	userInput.Name = "Test simpan dari service"
+	userInput.Email = "Test email dari service"
+	userInput.Occupation = "Test occupation dari service"
+	userInput.Password = "Test passwores dari service"
+
+	userService.RegisterUser(userInput)
 }
