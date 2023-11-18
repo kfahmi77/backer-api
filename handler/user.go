@@ -21,13 +21,19 @@ func (receiver *userhandler) RegisterUser(c *gin.Context) {
 	var input user.RegisterUserInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		response := helper.ApiResponse("Account not registered", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
 	}
 	newUser, err := receiver.userService.RegisterUser(input)
+	if err != nil {
+		response := helper.ApiResponse("Account not registered", http.StatusBadRequest, "error", nil)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 	formatter := user.FormatUser(newUser, "testtoken")
 	response := helper.ApiResponse("Account has  been registered", http.StatusOK, "success", formatter)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
-	}
+
 	c.JSON(http.StatusOK, response)
 }
