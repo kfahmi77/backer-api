@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-backer-api/handler"
 	"go-backer-api/user"
@@ -18,6 +19,15 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
+	userByEmail, err := userRepository.FindByEmail("test@gmail.com")
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	if userByEmail.ID == 0 {
+		fmt.Println("user tidak ditemukan")
+	} else {
+		fmt.Println("user ditemukan", userByEmail.Name)
+	}
 	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()
