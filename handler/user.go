@@ -44,6 +44,27 @@ func (h *userhandler) Login(c *gin.Context) {
 	//user memasukan input email dan password
 	//input ditangkap handler
 	//mapping dari inpput user ke input struct
-	//input struct passing ke service
+	// passing ke service
 	//di service mencari dengan bantuan repository user dengan mencocokan password
+	var input user.LoginUserInput
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.ApiResponse("Loggin Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+	loggedinUser, err := h.userService.Login(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		response := helper.ApiResponse("Loggin Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+	formatter := user.FormatUser(loggedinUser, "token123")
+	response := helper.ApiResponse("Suceesfully loggedin", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
 }

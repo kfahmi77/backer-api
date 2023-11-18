@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-backer-api/handler"
 	"go-backer-api/user"
@@ -19,24 +18,13 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
-	input := user.LoginUserInput{
-		Email:    "admin@gmail.com",
-		Password: "123s",
-	}
-	user, err := userService.Login(input)
-	if err != nil {
-		fmt.Println("error")
-		fmt.Println(err.Error())
-	}
-	fmt.Println(user.Email)
-	fmt.Println(user.Name)
-
 	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
 
-	api.POST("users", userHandler.RegisterUser)
+	api.POST("/users", userHandler.RegisterUser)
+	api.POST("/session", userHandler.Login)
 
 	router.Run(":7071")
 }
