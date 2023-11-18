@@ -27,6 +27,22 @@ func (receiver *userhandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+	// Check if the email is available
+	isEmailAvailable, err := receiver.userService.IsEmailAvailable(user.CheckEmailInput{Email: input.Email})
+	if err != nil {
+		errorMessage := gin.H{"errors": "Server error"}
+		response := helper.ApiResponse("Email availability check failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	if !isEmailAvailable {
+		// Email is not available; return an error
+		errorMessage := gin.H{"errors": "Email has been used"}
+		response := helper.ApiResponse("Email has been used", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
 	newUser, err := receiver.userService.RegisterUser(input)
 	if err != nil {
 		response := helper.ApiResponse("Account not registered", http.StatusBadRequest, "error", nil)
@@ -56,6 +72,7 @@ func (h *userhandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+
 	loggedinUser, err := h.userService.Login(input)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
