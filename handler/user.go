@@ -15,16 +15,17 @@ func NewUserHandler(userService user.Service) *userhandler {
 	return &userhandler{userService}
 }
 func (receiver *userhandler) RegisterUser(c *gin.Context) {
-	//tangkap input dari user
-	// map input dari user ke struct
+	//tangkap input dari newUser
+	// map input dari newUser ke struct
 	// structya di passing sebagai param service
 	var input user.RegisterUserInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
-	user, err := receiver.userService.RegisterUser(input)
-	response := helper.ApiResponse("Account has  been registered", http.StatusOK, "success", user)
+	newUser, err := receiver.userService.RegisterUser(input)
+	formatter := user.FormatUser(newUser, "testtoken")
+	response := helper.ApiResponse("Account has  been registered", http.StatusOK, "success", formatter)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
