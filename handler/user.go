@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-backer-api/helper"
 	"go-backer-api/user"
 	"net/http"
 )
@@ -23,8 +24,9 @@ func (receiver *userhandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, nil)
 	}
 	user, err := receiver.userService.RegisterUser(input)
+	response := helper.ApiResponse("Account has  been registered", http.StatusOK, "success", user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, response)
 }
