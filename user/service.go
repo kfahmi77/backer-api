@@ -54,7 +54,7 @@ func (s *service) Login(input LoginUserInput) (User, error) {
 	}
 	return user, nil
 }
-func (s *service) isEmailAvailable(input CheckEmailInput) (bool, error) {
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	email := input.Email
 	user, err := s.repository.FindByEmail(email)
 	if err != nil {
