@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-backer-api/helper"
 	"go-backer-api/user"
@@ -126,8 +127,10 @@ func (h *userhandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	path := "images/" + file.Filename
+	userID := 1
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 	err = c.SaveUploadedFile(file, path)
+
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 		response := helper.ApiResponse("Failed to upload image avatar", http.StatusBadRequest, "error", data)
@@ -135,7 +138,7 @@ func (h *userhandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	userID := 1
+
 	_, err = h.userService.SaveAvatar(userID, path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
