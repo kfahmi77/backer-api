@@ -14,7 +14,7 @@ type userhandler struct {
 func NewUserHandler(userService user.Service) *userhandler {
 	return &userhandler{userService}
 }
-func (receiver *userhandler) RegisterUser(c *gin.Context) {
+func (h *userhandler) RegisterUser(c *gin.Context) {
 	//tangkap input dari newUser
 	// map input dari newUser ke struct
 	// structya di passing sebagai param service
@@ -28,7 +28,7 @@ func (receiver *userhandler) RegisterUser(c *gin.Context) {
 		return
 	}
 	// Check if the email is available
-	isEmailAvailable, err := receiver.userService.IsEmailAvailable(user.CheckEmailInput{Email: input.Email})
+	isEmailAvailable, err := h.userService.IsEmailAvailable(user.CheckEmailInput{Email: input.Email})
 	if err != nil {
 		errorMessage := gin.H{"errors": "Server error"}
 		response := helper.ApiResponse("Email availability check failed", http.StatusUnprocessableEntity, "error", errorMessage)
@@ -43,7 +43,7 @@ func (receiver *userhandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-	newUser, err := receiver.userService.RegisterUser(input)
+	newUser, err := h.userService.RegisterUser(input)
 	if err != nil {
 		response := helper.ApiResponse("Account not registered", http.StatusBadRequest, "error", nil)
 
@@ -118,5 +118,35 @@ func (h *userhandler) CheckEmailAvailable(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 func (h *userhandler) UploadAvatar(c *gin.Context) {
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.ApiResponse("Failed to upload image avatar", http.StatusBadRequest, "error", data)
 
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	path := "images/" + file.Filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.ApiResponse("Failed to upload image avatar", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	userID := 1
+	_, err = h.userService.SaveAvatar(userID, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.ApiResponse("Failed to upload image avatar", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	data := gin.H{"is_uploaded": true}
+	response := helper.ApiResponse("Success to upload image avatar", http.StatusOK, "success", data)
+
+	c.JSON(http.StatusOK, response)
+	return
 }
