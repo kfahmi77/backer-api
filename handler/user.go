@@ -89,8 +89,8 @@ func (h *userhandler) Login(c *gin.Context) {
 func (h *userhandler) CheckEmailAvailable(c *gin.Context) {
 	//ada input dari user
 	//input email dimapping ke struct input
-	//struct input dipassing ke service
-	//service akan memanggil repository - email sudah ada atau belum
+	// dipassing ke service
+	// akan memanggil repository - email sudah ada atau belum
 	// repository - db
 	var input user.CheckEmailInput
 	err := c.ShouldBindJSON(&input)
@@ -116,4 +116,7 @@ func (h *userhandler) CheckEmailAvailable(c *gin.Context) {
 	}
 	response := helper.ApiResponse(metaMesage, http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, response)
+}
+func (h *userhandler) UploadAvatar(c *gin.Context) {
+
 }
