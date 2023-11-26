@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+
+	"go-backer-api/auth"
 	"go-backer-api/handler"
 	"go-backer-api/user"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -17,6 +21,9 @@ func main() {
 	}
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
+
+	fmt.Println(authService.GenerateToken(1001))
 
 	userHandler := handler.NewUserHandler(userService)
 
