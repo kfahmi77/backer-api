@@ -15,9 +15,10 @@ type Campaign struct {
 	Slug             string
 	CreatedAt        time.Time
 	UpdateAt         time.Time
+	CampaignImages   []CampaignImages
 }
 
-type ImageCampaign struct {
+type CampaignImages struct {
 	ID         int
 	CampaignID int
 	FileName   string
