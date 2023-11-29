@@ -127,11 +127,11 @@ func (h *userhandler) CheckEmailAvailable(c *gin.Context) {
 		return
 	}
 	data := gin.H{"is_available": isEmailAvailable}
-	metaMesage := "Email has been used"
+	metaMessage := "Email has been used"
 	if isEmailAvailable {
-		metaMesage = "Email is available"
+		metaMessage = "Email is available"
 	}
-	response := helper.ApiResponse(metaMesage, http.StatusOK, "success", data)
+	response := helper.ApiResponse(metaMessage, http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, response)
 }
 func (h *userhandler) UploadAvatar(c *gin.Context) {
