@@ -31,7 +31,7 @@ func main() {
 	campaignService := campaign.NewService(campaignRepository)
 	authService := auth.NewService()
 
-	campaigns, _ := campaignService.FindCampaign(0)
+	campaigns, _ := campaignService.GetCampaign(0)
 
 	fmt.Println(campaigns)
 	userHandler := handler.NewUserHandler(userService, authService)
