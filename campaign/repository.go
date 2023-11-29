@@ -11,6 +11,15 @@ type repository struct {
 	db *gorm.DB
 }
 
+func (r *repository) FindUserID(userID int) ([]Campaign, error) {
+	var campaigns []Campaign
+	err := r.db.Where("user_id = ?", userID).Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
+	if err != nil {
+		return campaigns, err
+	}
+	return campaigns, nil
+}
+
 func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
@@ -19,15 +28,6 @@ func (r *repository) FindAll() ([]Campaign, error) {
 	var campaigns []Campaign
 
 	err := r.db.Find(&campaigns).Error
-	if err != nil {
-		return campaigns, err
-	}
-	return campaigns, nil
-}
-
-func (r *repository) FindUserId(userId int) ([]Campaign, error) {
-	var campaigns []Campaign
-	err := r.db.Where("user_id = ?", userId).Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
 	if err != nil {
 		return campaigns, err
 	}
