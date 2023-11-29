@@ -4,20 +4,16 @@ import "gorm.io/gorm"
 
 type Repository interface {
 	FindAll() ([]Campaign, error)
-	FindUserID(userID int) ([]Campaign, error)
+	FindByUserID(userID int) ([]Campaign, error)
+	FindByID(ID int) (Campaign, error)
+	Save(campaign Campaign) (Campaign, error)
+	Update(campaign Campaign) (Campaign, error)
+	CreateImage(campaignImage CampaignImage) (CampaignImage, error)
+	MarkAllImagesAsNonPrimary(campaignID int) (bool, error)
 }
 
 type repository struct {
 	db *gorm.DB
-}
-
-func (r *repository) FindUserID(userID int) ([]Campaign, error) {
-	var campaigns []Campaign
-	err := r.db.Where("user_id = ?", userID).Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
-	if err != nil {
-		return campaigns, err
-	}
-	return campaigns, nil
 }
 
 func NewRepository(db *gorm.DB) *repository {
@@ -27,9 +23,10 @@ func NewRepository(db *gorm.DB) *repository {
 func (r *repository) FindAll() ([]Campaign, error) {
 	var campaigns []Campaign
 
-	err := r.db.Find(&campaigns).Error
+	err := r.db.Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
 	if err != nil {
 		return campaigns, err
 	}
+
 	return campaigns, nil
 }
